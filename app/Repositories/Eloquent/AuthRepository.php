@@ -15,7 +15,7 @@ public function __construct(User $model)
      $this->model=$model;
 }
 public function register(array $data){
-  $otp=rand(100000,999999);//;
+  $otp = random_int(100000, 999999);
 $user= $this->model->create([
             'first_name'     =>$data['first_name'],
             'last_name'    => $data['last_name'],

@@ -31,4 +31,8 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    public function user() { return $this->belongsTo(User::class); }
+public function type() { return $this->belongsTo(PropertyType::class); }
+public function loctaion() { return $this->belongsTo(Loctaion::class); }
+public function category() { return $this->belongsTo(Category::class); }
 }

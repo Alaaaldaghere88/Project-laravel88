@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\PropertyTypeService;
+use App\Services\CategoryService;
+use App\Traits\BaseResponse;
 use Illuminate\Http\Request;
 
-class PropertyTypeController extends Controller
+class CategoryController extends Controller
 {
+    use BaseResponse;
     protected $service;
-    public function __construct(PropertyTypeService $service)
+    public function __construct(CategoryService $service)
     {
         $this->service = $service;
     }

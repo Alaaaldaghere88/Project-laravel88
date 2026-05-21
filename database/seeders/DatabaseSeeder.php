@@ -23,5 +23,6 @@ class DatabaseSeeder extends Seeder
         // ]);
         $this->call(RoleSeeder::class);
         $this->call(PropertyTypeSeeder::class);
+        $this->call(CategorySeeder::class);
     }
 }

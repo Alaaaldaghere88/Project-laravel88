@@ -9,4 +9,8 @@ class PropertyTypeRepository implements PropertyTypeRepositoryInterface{
     {
         return PropertyType::all();
     }
+    public function getById($id)
+    {
+        return PropertyType::find($id);
+    }
 }
