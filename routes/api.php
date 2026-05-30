@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\LoctaionController;
@@ -40,6 +41,10 @@ Route::middleware('auth:sanctum')->group(function() {
         Route::get('/', 'get');
         Route::get('/{id}', 'getById');
     });
+    Route::controller(AppointmentController::class)->prefix('appointment')->group(function() {
+        Route::get('/', 'get');
+        Route::get('/{id}', 'getById');
+    });
 });
 //owner
 Route::middleware(['auth:sanctum','role:owner'])
@@ -54,5 +59,16 @@ $route->post('/','create');
 $route->put('/{id}','update');
 $route->delete('/{id}','delete');
 });
+$route->controller(AppointmentController::class)->prefix('appointment')->group(function($route){
+$route->put('/cancel/{id}','cancel');
 });
+});
+Route::middleware(['auth:sanctum','role:customer'])->group(function($route){
+    $route->controller(AppointmentController::class)->prefix('appointment')->group(function($route){
+        $route->post('/','create');
+        $route->put('/{id}','update');
+        $route->delete('/{id}','delete');
+    });
+});
+
 
