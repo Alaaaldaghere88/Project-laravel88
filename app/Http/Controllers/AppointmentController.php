@@ -36,4 +36,13 @@ class AppointmentController extends Controller
    public function cancel($id){
     return $this->appointmentService->cancelAppointment($id);
    }
+   public function filter(Request $request)
+    {
+      $validated = $request->validate([
+        'filters' => 'nullable|array',
+    ]);
+    $filters = $validated['filters'] ?? [];
+    return $this->appointmentService->filterAppointments($filters);
+    }
+
 }

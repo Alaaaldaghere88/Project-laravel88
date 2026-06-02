@@ -5,12 +5,12 @@ namespace App\Enums;
 enum PropertyStatus: string
 {
     case Available = 'available';
-    case Reserved = 'reserved';
+    case NOT_Available = 'not_available';
     public function label(): string
     {
         return match($this) {
             self::Available => 'متاحة',
-            self::Reserved => 'محجوزة',
+            self::NOT_Available => 'غير متاحة',
         };
     }
 }

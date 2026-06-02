@@ -53,4 +53,9 @@ $user->email_verified_at=now();
 $user->save();
 return $user;
 }
+public function updateInfo(array $data){
+    $user=auth()->user();
+    $user->update($data);
+    return $user;
+}
 }

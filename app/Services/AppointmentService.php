@@ -6,6 +6,7 @@ use App\Enums\AppointmentStatus;
 use App\Http\Resources\AppointmentResource;
 use App\Repositories\Interfaces\AppointmentRepositoryInterface;
 use App\Repositories\Interfaces\PaymentRepositoryInterface;
+use App\Repositories\Interfaces\PropertyRepositoryInterface;
 use App\Traits\BaseResponse;
 use Illuminate\Support\Facades\DB;
 use Stripe\Checkout\Session;
@@ -19,24 +20,34 @@ class AppointmentService
 
     protected $appointmentRepository;
     protected $paymentRepository;
+    protected $propertyRepository;
 
     public function __construct(
         AppointmentRepositoryInterface $appointmentRepository,
-        PaymentRepositoryInterface $paymentRepository
+        PaymentRepositoryInterface $paymentRepository,
+        PropertyRepositoryInterface $propertyRepository
     ) {
         $this->appointmentRepository = $appointmentRepository;
         $this->paymentRepository = $paymentRepository;
+        $this->propertyRepository = $propertyRepository;
     }
 
     public function createAppointment(array $data)
     {
         $this->sameDay($data);
+        $property=$this->propertyRepository->getById($data['property_id']);
+        $days_num = $data['days_num'] ?? 1;
+        $price=$property->price * ($data['days_num'] ?? 1);
+        $data['total_price'] = $price;
+        $data['days_num'] = $days_num;
+         $data['user_id'] = auth()->id();
+    //      $days_num = isset($data['days_num']) ? (int) $data['days_num'] : 1;
+    // $appointmentDate = \Carbon\Carbon::parse($data['appointment_date']);
         DB::beginTransaction();
         try {
-            $data['user_id'] = auth()->id();
-            $frontendUrl = env('FRONTEND_URL', 'http://localhost:3000');
             $appointment = $this->appointmentRepository->create($data);
-            $data['amount'] = $appointment->property->price;
+            $frontendUrl = env('FRONTEND_URL', 'http://localhost:3000');
+            $data['amount'] = $price;
             Stripe::setApiKey(env('STRIPE_SECRET'));
             $checkout_session = Session::create([
                 'payment_method_types' => ['card'],
@@ -183,4 +194,10 @@ class AppointmentService
             throw new HttpResponseException($this->errorResponse('Only pending appointments can be updated.', 422));
         }
     }
+    public function filterAppointments(array $filters)
+    {
+        $appointments = $this->appointmentRepository->filter($filters);
+        return $this->successResponse('success', AppointmentResource::collection($appointments));
+    }
+
 }

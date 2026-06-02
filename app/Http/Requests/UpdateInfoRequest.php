@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateAppointment extends FormRequest
+class UpdateInfoRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,8 +23,10 @@ class UpdateAppointment extends FormRequest
     public function rules(): array
     {
         return [
-            'appointment_date' => 'sometimes|date|after:now',
-            'days_num'=>'sometimes|integer|min:1',
+            'first_name'=>'sometimes|required|string|max:255',
+            'last_name'=>'sometimes|required|string|max:255',
+            'phone'=>'sometimes|required|string|max:255',
+            'photo'=>'sometimes|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
         ];
     }
 }

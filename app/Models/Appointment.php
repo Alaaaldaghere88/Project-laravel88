@@ -14,6 +14,8 @@ protected $fillable = [
     'property_id',
     'appointment_date',
     'status',
+    'days_num',
+    'total_price'
 ];
 protected $casts = [
     'appointment_date' => 'datetime',

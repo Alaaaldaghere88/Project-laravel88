@@ -6,6 +6,9 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\LoctaionController;
 use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\PropertyTypeController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\ReviewReplayController;
 use App\Http\Middleware\VerifyEmail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -17,8 +20,9 @@ Route::controller(AuthController::class)->prefix('auth')->group(function($route)
 $route->post('register','register');
 $route->post('login','login');
 $route->post('verify','verify')->middleware(['auth:sanctum']);
-$route->middleware(['auth:sanctum','role:customer',VerifyEmail::class])->get('me','me');
-$route->middleware(['auth:sanctum','role:customer',VerifyEmail::class])->post('logout','logout');
+$route->middleware(['auth:sanctum',VerifyEmail::class])->get('me','me');
+$route->middleware(['auth:sanctum',VerifyEmail::class])->post('logout','logout');
+$route->middleware(['auth:sanctum',VerifyEmail::class])->post('update-info','updateInfo');
 });
 //public
 Route::middleware('auth:sanctum')->group(function() {
@@ -34,7 +38,10 @@ Route::middleware('auth:sanctum')->group(function() {
     // Properties
     Route::controller(PropertyController::class)->prefix('property')->group(function() {
         Route::get('/', 'get');
+        Route::get('/filter', 'filter');
+        Route::get('/suggestion/{categoryId}', 'suggestion');
         Route::get('/{id}', 'getById');
+
     });
     // Categories
     Route::controller(CategoryController::class)->prefix('category')->group(function() {
@@ -43,7 +50,18 @@ Route::middleware('auth:sanctum')->group(function() {
     });
     Route::controller(AppointmentController::class)->prefix('appointment')->group(function() {
         Route::get('/', 'get');
+        Route::get('/filter', 'filter');
         Route::get('/{id}', 'getById');
+
+    });
+    Route::controller(ReviewController::class)->prefix('review')->group(function($route){
+        $route->get('/property/{id}','index');
+        $route->get('/{id}','show');
+    });
+    Route::controller(ReviewReplayController::class)->prefix('review-replay')->group(function($route){
+       $route->post('/','create');
+       $route->put('/{id}','update');
+       $route->delete('/{id}','delete');
     });
 });
 //owner
@@ -58,16 +76,41 @@ $route->controller(PropertyController::class)->prefix('property')->group(functio
 $route->post('/','create');
 $route->put('/{id}','update');
 $route->delete('/{id}','delete');
+$route->put('/change-status/{id}','changeStatus');
 });
 $route->controller(AppointmentController::class)->prefix('appointment')->group(function($route){
 $route->put('/cancel/{id}','cancel');
 });
 });
+//customer
 Route::middleware(['auth:sanctum','role:customer'])->group(function($route){
     $route->controller(AppointmentController::class)->prefix('appointment')->group(function($route){
         $route->post('/','create');
         $route->put('/{id}','update');
         $route->delete('/{id}','delete');
+    });
+    $route->controller(ReportController::class)->prefix('report')->group(function($route){
+        $route->post('/','create');
+        $route->put('/{id}','update');
+        $route->delete('/{id}','destroy');
+    });
+    $route->controller(ReviewController::class)->prefix('review')->group(function($route){
+       $route->post('/','create');
+       $route->put('/{id}','update');
+       $route->delete('/{id}','destroy');
+    });
+});
+//admin || customer
+Route::middleware(['auth:sanctum','role:admin|customer'])->group(function($route){
+    $route->controller(ReportController::class)->prefix('report')->group(function($route){
+        $route->get('/','index');
+        $route->get('/{id}','show');
+    });
+});
+//admin
+Route::middleware(['auth:sanctum','role:admin'])->group(function($route){
+    $route->controller(PropertyController::class)->prefix('property')->group(function($route){
+        $route->put('/active/{id}','active');
     });
 });
 

@@ -36,6 +36,8 @@ class CreateProperty extends FormRequest
                 new MaxVideoDuration
             ],
             'document' => 'required|file|mimes:pdf,doc,docx',
+            'rooms' => 'required|integer',
+            'capacity' => 'required|integer',
         ];
     }
 }

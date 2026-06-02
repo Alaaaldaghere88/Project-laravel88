@@ -44,14 +44,42 @@ class AppointmentRepository implements AppointmentRepositoryInterface
         ->latest()
         ->get();
     }
-    public function sameDay(array $data)
-    {
-        if (!isset($data['appointment_date'])) {
-        return;
+   public function sameDay(array $data)
+{
+    if (!isset($data['appointment_date'])) {
+        return false;
     }
-        return $this->model->whereDate('appointment_date', $data['appointment_date'])
-        ->where('property_id', $data['property_id'])
-        ->where('status', '!=', AppointmentStatus::Rejected)
+   $start = \Carbon\Carbon::parse($data['appointment_date']);
+    $days = (int) ($data['days_num'] ?? 1);
+    $end = $start->copy()->addDays($days - 1);
+    return $this->model->where('property_id', $data['property_id'])
+        ->where('status', '!=', 'rejected')
+        ->where(function ($query) use ($start, $end) {
+            $query->where(function ($q) use ($start, $end) {
+                $q->whereDate('appointment_date', '<=', $end)
+                  ->whereRaw('DATE_ADD(appointment_date, INTERVAL days_num - 1 DAY) >= ?', [$start]);
+            });
+        })
         ->exists();
+}
+    public function filter(array $filters)
+{
+    $query = $this->model->query();
+    $user=auth()->user();
+    if(!$user->hasRole('admin'))
+        $query->where(function($q) use ($user){
+            $q->where('user_id', $user->id)
+              ->orWhereHas('property', function ($query) use ($user) {
+                  $query->where('user_id', $user->id);
+              });
+        });
+    if (!empty($filters['appointment_date'])) {
+        $query->where('appointment_date', $filters['appointment_date']);
     }
+    if (!empty($filters['status'])) {
+        $query->where('status', $filters['status']);
+    }
+    return $query->get();
+}
+
 }

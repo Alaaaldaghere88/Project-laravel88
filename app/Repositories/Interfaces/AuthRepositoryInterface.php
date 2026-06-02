@@ -6,4 +6,5 @@ public function login(array $data);
 public function me();
 public function logout();
 public function verify(array $data);
+public function updateInfo(array $data);
 }

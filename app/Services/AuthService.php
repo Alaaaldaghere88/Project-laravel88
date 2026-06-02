@@ -2,11 +2,13 @@
 namespace App\Services;
 
 use App\Repositories\Eloquent\AuthRepository;
+use App\Traits\BaseImages;
 use App\Traits\BaseResponse;
 
 class AuthService{
 private $repo;
 use BaseResponse;
+use BaseImages;
 public function __construct(AuthRepository $repo)
 {
      $this->repo=$repo;
@@ -27,5 +29,13 @@ public function verify(array $data)
 {
 
 return is_null($this->repo->verify($data))?$this->errorResponse("Invalid Otp"): $this->successResponse("Account verified successfully");
+}
+public function updateInfo(array $data){
+    $user=auth()->user();
+    if(isset($data['photo'])&& $data['photo']!=null){
+        $path=$this->update_image($user->photo,$data['photo'],'users');
+        $data['photo'] = $path;
+    }
+    return $this->successResponse("User info updated successfully",$this->repo->updateInfo($data));
 }
 }

@@ -67,11 +67,43 @@ class PropertyService
         $this->propertyRepository->delete($id);
         return $this->successResponse('Property deleted successfully', null);
     }
+    public function filter(array $filters)
+    {
+        $properties = $this->propertyRepository->filter($filters);
+        return $this->successResponse('success', PropertyResource::collection($properties));
+    }
 
     public function canAccess($property): bool
     {
         $user = auth()->user();
         if ($user?->hasRole('admin')) return true;
         return $property->user_id === $user?->id;
+    }
+     public function suggestion(int $categoryId)
+    {
+        $appointments = $this->propertyRepository->suggestion($categoryId);
+        return $this->successResponse('success', PropertyResource::collection($appointments));
+    }
+    public function changeStatus($id, $status)
+    {
+        $property = $this->propertyRepository->getById($id);
+        if (!$property) {
+            return $this->errorResponse('Property not found', 404);
+        }
+
+        if (!$this->canAccess($property)) {
+            return $this->errorResponse('Unauthorized', 403);
+        }
+
+        $this->propertyRepository->changeStatus($id, $status);
+        return $this->successResponse('Property status updated successfully', null);
+    }
+    public function active($id,$flag){
+        $property = $this->propertyRepository->getById($id);
+        if (!$property) {
+            return $this->errorResponse('Property not found', 404);
+        }
+        $this->propertyRepository->active($id,$flag);
+        return $this->successResponse('Property active status updated successfully', null);
     }
 }

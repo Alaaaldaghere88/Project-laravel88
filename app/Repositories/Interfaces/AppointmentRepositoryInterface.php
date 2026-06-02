@@ -9,4 +9,6 @@ interface AppointmentRepositoryInterface
     public function getAll();
     public function getAccessibleAppointments(int $userId);
     public function sameDay(array $data);
+    public function filter(array $filters);
+
 }

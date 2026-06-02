@@ -17,6 +17,8 @@ class Property extends Model
         'document',
         'active',
         'user_id',
+        'rooms',
+        'capacity'
     ];
     public function location()
     {
@@ -30,4 +32,18 @@ class Property extends Model
     {
         return $this->belongsTo(Category::class);
     }
+    public function scopeVisibleToUser($query)
+{
+    $user = auth()->user();
+    if ($user?->hasRole('admin')) {
+        return $query;
+    }
+    return $query->where(function ($q) use ($user) {
+        $q->where('active', true)
+          ->orWhere(function ($subQ) use ($user) {
+              $subQ->where('active', false)
+                   ->where('user_id', $user?->id);
+          });
+    });
+}
 }

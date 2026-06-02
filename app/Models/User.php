@@ -7,12 +7,13 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
-#[Fillable(['first_name','last_name', 'email', 'password','otp','phone'])]
+#[Fillable(['first_name','last_name', 'email', 'password','otp','phone','photo'])]
 #[Hidden(['password', 'remember_token','otp'])]
 class User extends Authenticatable
 {
@@ -35,4 +36,7 @@ class User extends Authenticatable
 public function type() { return $this->belongsTo(PropertyType::class); }
 public function loctaion() { return $this->belongsTo(Loctaion::class); }
 public function category() { return $this->belongsTo(Category::class); }
+public function reports():HasMany{
+    return $this->hasMany(Report::class);
+}
 }

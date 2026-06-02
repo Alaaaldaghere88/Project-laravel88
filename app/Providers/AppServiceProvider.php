@@ -14,9 +14,11 @@ use App\Repositories\Interfaces\LocationRepositoryInterface;
 use App\Repositories\Interfaces\PropertyTypeRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
 use App\Repositories\Eloquent\PropertyRepository;
+use App\Repositories\Eloquent\ReviewRepository;
 use App\Repositories\Interfaces\PropertyRepositoryInterface;
 use App\Repositories\Interfaces\AppointmentRepositoryInterface;
 use App\Repositories\Interfaces\PaymentRepositoryInterface;
+use App\Repositories\Interfaces\ReviewRepositoryInterface;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -40,6 +42,9 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(PropertyRepositoryInterface::class,PropertyRepository::class);
         $this->app->bind(AppointmentRepositoryInterface::class, AppointmentRepository::class);
         $this->app->bind(PaymentRepositoryInterface::class, PaymentRepository::class);
+        $this->app->bind(\App\Repositories\Interfaces\ReportRepositoryInterface::class,\App\Repositories\Eloquent\ReportRepository::class);
+        $this->app->bind(ReviewRepositoryInterface::class,ReviewRepository::class);
+        $this->app->bind(\App\Repositories\Interfaces\ReviewReplayRepositoryInterface::class,\App\Repositories\Eloquent\ReviewReplayRepository::class);
        // $this->app->bind(\App\Repositories\Interfaces\PropertyrepositoryInterface::class,Propertyre::class);
     }
 }

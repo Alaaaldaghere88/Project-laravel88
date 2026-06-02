@@ -25,6 +25,7 @@ class CreateAppointment extends FormRequest
         return [
         'property_id' => 'required|exists:properties,id',
         'appointment_date' => 'required|date|after:now',
+        'days_num'=>'sometimes|integer|min:1',
         ];
     }
 }
