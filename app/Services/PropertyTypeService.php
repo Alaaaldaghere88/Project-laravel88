@@ -13,14 +13,14 @@ class PropertyTypeService{
     }
     public function get()
     {
-        return $this->successResponse('success',$this->propertyTypeRepository->get());
+        return $this->successResponse(__('messages.retrieved_successfully'),$this->propertyTypeRepository->get());
     }
     public function getById($id)
     {
         $propertyType = $this->propertyTypeRepository->getById($id);
         if(!$propertyType){
-            return $this->errorResponse('Property Type not found',404);
+            return $this->errorResponse(__('messages.not_found'),404);
         }
-        return $this->successResponse('success',$propertyType);
+        return $this->successResponse(__('messages.retrieved_successfully'),$propertyType);
     }
 }

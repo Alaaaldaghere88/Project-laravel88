@@ -18,8 +18,8 @@ class CategoryService
     {
         $category=$this->repository->getCategoryById($id);
         if(!$category){
-            return $this->errorResponse('Category not found',404);
+            return $this->errorResponse(__('messages.not_found'),404);
         }
-        return $this->successResponse('success',$category);
+        return $this->successResponse(__('messages.retrieved_successfully'),$category);
     }
     }

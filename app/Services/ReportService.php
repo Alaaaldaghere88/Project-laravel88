@@ -18,7 +18,7 @@ class ReportService
     public function createReport(array $data)
     {
         $data['user_id'] = auth()->id();
-        return $this->successResponse("Created done",$this->reportRepository->create($data));
+        return $this->successResponse(__('messages.created_done'),$this->reportRepository->create($data));
     }
 
     public function getAllReports()
@@ -30,32 +30,32 @@ class ReportService
             $all=$this->reportRepository->getMyReport();
         }
 
-        return $this->successResponse("Reports retrieved",$all);
+        return $this->successResponse(__('messages.retrieved_successfully'),$all);
     }
 
     public function getReportById($id)
     {
         $this->check($id);
-        return $this->successResponse("Report retrieved",$this->reportRepository->getById($id));
+        return $this->successResponse(__('messages.retrieved_successfully'),$this->reportRepository->getById($id));
     }
 
     public function updateReport($id, array $data)
     {
         $this->check($id);
-        return $this->successResponse("Report updated",$this->reportRepository->update($id, $data));
+        return $this->successResponse(__('messages.updated_done'),$this->reportRepository->update($id, $data));
     }
     public function deleteReport($id)
     {
         $this->check($id);
-        return $this->successResponse("Report deleted",$this->reportRepository->delete($id));
+        return $this->successResponse(__('messages.deleted_done'),$this->reportRepository->delete($id));
     }
     public function check($id){
         $report = $this->reportRepository->getById($id);
         $user=auth()->user();
         if (!$report)
-            throw new HttpResponseException($this->errorResponse("Report not found", 404));
+            throw new HttpResponseException($this->errorResponse(__('messages.not_found'), 404));
         if($report->user_id != $user->id && !$user->hasRole('admin'))
-            throw new HttpResponseException($this->errorResponse("Unauthorized", 403));
+            throw new HttpResponseException($this->errorResponse(__('messages.unauthorized'), 403));
 
     }
 }

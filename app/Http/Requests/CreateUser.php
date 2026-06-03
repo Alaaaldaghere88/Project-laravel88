@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class LogInRequest extends FormRequest
+class CreateUser extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,9 +23,13 @@ class LogInRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => 'required|email',
-            'password' => 'required|min:8',
-            'fcm_token' => 'sometimes|required|string',
+            'first_name'=>'required|string|max:255',
+            'last_name'=>'required|string|max:255',
+            'email'=>'required|email|unique:users,email',
+            'password'=>'required|string|min:8',
+            'photo'=>'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'role'=>'required|in:customer,owner,admin',
+            'phone'=>'required|digits:10|starts_with:0|unique:users,phone',
         ];
     }
 }

@@ -27,8 +27,9 @@ class RegisterRequest extends FormRequest
             'last_name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8|confirmed',
-            'phone'=>'required|string|max:10|starts_with:0|unique:users,phone',
-            'role'=>'required|in:customer,owner'
+            'phone'=>'required|digits:10|starts_with:0|unique:users,phone',
+            'role'=>'required|in:customer,owner',
+            'fcm_token' => 'sometimes|required|string',
         ];
     }
 }

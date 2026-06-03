@@ -45,6 +45,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(\App\Repositories\Interfaces\ReportRepositoryInterface::class,\App\Repositories\Eloquent\ReportRepository::class);
         $this->app->bind(ReviewRepositoryInterface::class,ReviewRepository::class);
         $this->app->bind(\App\Repositories\Interfaces\ReviewReplayRepositoryInterface::class,\App\Repositories\Eloquent\ReviewReplayRepository::class);
+        $this->app->bind(\App\Repositories\Interfaces\UserRepositoryInterface::class,\App\Repositories\Eloquent\UserRepository::class);
        // $this->app->bind(\App\Repositories\Interfaces\PropertyrepositoryInterface::class,Propertyre::class);
     }
 }

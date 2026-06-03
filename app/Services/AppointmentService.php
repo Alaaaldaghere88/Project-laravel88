@@ -77,14 +77,14 @@ class AppointmentService
             ]);
 
             DB::commit();
-            return $this->successResponse('Appointment created. Please proceed to payment.', [
+            return $this->successResponse(__('messages.created_done'), [
                 'appointment' => AppointmentResource::make($appointment),
                 'payment_url' => $checkout_session->url
             ]);
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return $this->errorResponse('Failed to create appointment and payment session: ' . $e->getMessage(), 500);
+            return $this->errorResponse(__('messages.Failed') . ': ' . $e->getMessage(), 500);
         }
     }
     public function updateAppointment(int $id, array $data)
@@ -93,7 +93,7 @@ class AppointmentService
         $this->sameDay($data);
         $this->canUpdateOrDelete($id);
         return $this->successResponse(
-            'Appointment updated successfully',
+            __('messages.updated_done'),
             AppointmentResource::make($this->appointmentRepository->update($id, $data))
         );
     }
@@ -102,13 +102,13 @@ class AppointmentService
         $this->checkAccess($id);
         $this->canUpdateOrDelete($id);
         $this->appointmentRepository->delete($id);
-        return $this->successResponse('Appointment deleted successfully');
+        return $this->successResponse(__('messages.deleted_done'));
     }
     public function getAppointmentById(int $id)
     {
         $this->checkAccess($id);
         $appointment = $this->appointmentRepository->getById($id);
-        return $this->successResponse('success', AppointmentResource::make($appointment));
+        return $this->successResponse(__('messages.retrieved_successfully'), AppointmentResource::make($appointment));
     }
     public function getAllAppointments()
     {
@@ -119,7 +119,7 @@ class AppointmentService
             $appointments = $this->appointmentRepository->getAccessibleAppointments($user->id);
         }
         return $this->successResponse(
-            'success',
+            __('messages.retrieved_successfully'),
             AppointmentResource::collection($appointments)
         );
     }
@@ -129,7 +129,7 @@ class AppointmentService
     $appointment = $this->appointmentRepository->getById($id);
 
     if ($appointment->status != AppointmentStatus::Accepted) {
-        return $this->errorResponse('Only accepted appointments can be cancelled.', 422);
+        return $this->errorResponse(__('messages.Only accepted appointments can be cancelled.'), 422);
     }
     DB::beginTransaction();
     try {
@@ -138,12 +138,12 @@ class AppointmentService
             Stripe::setApiKey(env('STRIPE_SECRET'));
             $session = \Stripe\Checkout\Session::retrieve($payment->stripe_session_id);
             if ($session->payment_status !== 'paid') {
-                return $this->errorResponse('Cannot refund: The payment for this session has not been completed.', 400);
+                return $this->errorResponse(__('messages.Cannot refund: The payment for this session has not been completed.'), 400);
             }
             if ($session->payment_intent) {
                 Refund::create(['payment_intent' => $session->payment_intent]);
             } else {
-                return $this->errorResponse('Refund failed: No payment intent associated with this session.', 400);
+                return $this->errorResponse(__('messages.Refund failed: No payment intent associated with this session.'), 400);
             }
         }
          $data['status'] = AppointmentStatus::Rejected;
@@ -152,21 +152,21 @@ class AppointmentService
             $this->paymentRepository->update($payment->id, ['status' => 'refunded']);
         }
         DB::commit();
-        return $this->successResponse('Appointment cancelled and refund processed successfully', AppointmentResource::make($appointment));
+        return $this->successResponse(__('messages.Appointment cancelled and refund processed successfully'), AppointmentResource::make($appointment));
 
        } catch (\Exception $e) {
         DB::rollBack();
-        return $this->errorResponse('Failed to cancel appointment: ' . $e->getMessage(), 500);
+        return $this->errorResponse(__('messages.Failed') . ': ' . $e->getMessage(), 500);
        }
     }
     public function checkAccess($id)
     {
         $appointment = $this->appointmentRepository->getById($id);
         if (!$appointment) {
-            throw new HttpResponseException($this->errorResponse('Appointment not found', 404));
+            throw new HttpResponseException($this->errorResponse(__('messages.not_found'), 404));
         }
         if (!$this->isAdmin() && !$this->isOwner($appointment) && !$this->isUser($appointment)) {
-            throw new HttpResponseException($this->errorResponse('Unauthorized', 403));
+            throw new HttpResponseException($this->errorResponse(__('messages.Unauthorized'), 403));
         }
     }
     public function isAdmin()
@@ -184,20 +184,20 @@ class AppointmentService
     public function sameDay($data)
     {
         if ($this->appointmentRepository->sameDay($data)) {
-            throw new HttpResponseException($this->errorResponse('An appointment already exists for this property on the selected date.', 422));
+            throw new HttpResponseException($this->errorResponse(__('messages.Appointment already exists for this property on the selected date.'), 422));
         }
     }
     public function canUpdateOrDelete($id)
     {
         $appointment = $this->appointmentRepository->getById($id);
           if ($appointment->status !=AppointmentStatus::Pending) {
-            throw new HttpResponseException($this->errorResponse('Only pending appointments can be updated.', 422));
+            throw new HttpResponseException($this->errorResponse(__('messages.Only pending appointments can be updated.'), 422));
         }
     }
     public function filterAppointments(array $filters)
     {
         $appointments = $this->appointmentRepository->filter($filters);
-        return $this->successResponse('success', AppointmentResource::collection($appointments));
+        return $this->successResponse(__('messages.retrieved_successfully'), AppointmentResource::collection($appointments));
     }
 
 }

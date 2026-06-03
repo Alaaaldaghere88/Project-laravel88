@@ -16,9 +16,11 @@ class AppointmentResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'user' => UserResource::make($this->whenLoaded('user')),
-            'property' => PropertyResource::make($this->whenLoaded('property')),
+            'user' => UserResource::make($this->user),
+            'property' => PropertyResource::make($this->property),
             'appointment_date' => $this->appointment_date,
+            'days_num'=>$this->days_num,
+            'total_price'=>$this->total_price,
            'status' => $this->status?->value
         ];
     }

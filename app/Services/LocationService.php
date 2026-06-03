@@ -19,28 +19,28 @@ class LocationService{
     {
         $existence = $this->handleExistence($id);
         if(!$existence){
-            return $this->errorResponse("Location not found");
+            return $this->errorResponse(__('messages.not_found'),404);
         }
          $data=$this->locationRepository->update($id,$data);
-         return $this->successResponse("Location updated successfully",$data);
+         return $this->successResponse(__('messages.updated_done'),$data);
     }
     public function delete(int $id)
     {
         $existence = $this->handleExistence($id);
         if(!$existence){
-            return $this->errorResponse("Location not found");
+            return $this->errorResponse(__('messages.not_found'),404);
         }
          $this->locationRepository->delete($id);
-         return $this->successResponse("Location deleted successfully");
+         return $this->successResponse(__('messages.deleted_done'));
     }
     public function index(int $id)
     {
         $existence = $this->handleExistence($id);
         if(!$existence){
-            return $this->errorResponse("Location not found");
+            return $this->errorResponse(__('messages.not_found'),404);
         }
         $data=$this->locationRepository->index($id);
-        return $this->successResponse("Location retrieved successfully",$data);
+        return $this->successResponse(__('messages.retrieved_successfully'),$data);
     }
     public function handleExistence(int $id)
     {

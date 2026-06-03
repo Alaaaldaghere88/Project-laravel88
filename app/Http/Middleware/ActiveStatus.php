@@ -7,7 +7,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class VerifyEmail
+class ActiveStatus
 {
     use BaseResponse;
     /**
@@ -15,11 +15,11 @@ class VerifyEmail
      *
      * @param  Closure(Request): (Response)  $next
      */
-      public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next): Response
     {
-     $user=auth()->user();
-        if($user->otp)
-            return $this->errorResponse(__('messages.verify_email_first'), 403);
+        $user=auth()->user();
+        if(!$user->active)
+            return $this->errorResponse(__('messages.account_not_active'), 403);
         return $next($request);
     }
 }

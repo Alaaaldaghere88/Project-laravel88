@@ -15,24 +15,24 @@ class ReviewReplayService
     }
     public function create(array $data){
         $data['user_id'] = auth()->id();
-        return $this->successResponse("Created done",ReviewReplayResource::make($this->reviewReplayRepository->create($data)));
+        return $this->successResponse(__('messages.created_done'),ReviewReplayResource::make($this->reviewReplayRepository->create($data)));
     }
     public function update(array $data,int $id){
         $this->canAccess($id);
-        return $this->successResponse("Updated done",ReviewReplayResource::make($this->reviewReplayRepository->update($data,$id)));
+        return $this->successResponse(__('messages.updated_done'),ReviewReplayResource::make($this->reviewReplayRepository->update($data,$id)));
     }
     public function delete(int $id){
         $this->canAccess($id);
         $this->reviewReplayRepository->delete($id);
-        return $this->successResponse("Deleted done");
+        return $this->successResponse(__('messages.deleted_done'));
     }
     public function canAccess($id){
         $reviewReplay = $this->reviewReplayRepository->getById($id);
         if(!$reviewReplay){
-            throw new HttpResponseException($this->errorResponse('Review replay not found',404));
+            throw new HttpResponseException($this->errorResponse(__('messages.not_found'), 404));
         }
         if($reviewReplay->review->user_id != auth()->id()){
-            throw new HttpResponseException($this->errorResponse('You are not allowed to access this review replay',401));
+            throw new HttpResponseException($this->errorResponse(__('messages.unauthorized'), 403));
         }
     }
 }

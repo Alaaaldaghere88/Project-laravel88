@@ -27,4 +27,8 @@ class PaymentRepository implements PaymentRepositoryInterface
     {
         return $this->model->all();
     }
+    public function filter(string $filter)
+    {
+       return $this->model->where('status', $filter)->get();
+    }
 }

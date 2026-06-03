@@ -6,4 +6,5 @@ interface PaymentRepositoryInterface
     public function getById(int $id);
     public function update(int $id, array $data);
     public function getAll();
+    public function filter(string $filter);
 }

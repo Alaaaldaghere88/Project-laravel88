@@ -16,7 +16,7 @@ return new class extends Migration
     $table->foreignId('appointment_id')->constrained('appointments')->onDelete('cascade');
     $table->decimal('amount', 10, 2);
     $table->string('currency', 3)->default('USD');
-    $table->string('stripe_session_id')->nullable();
+    $table->text('stripe_session_id')->nullable();
     $table->enum('status', ['pending', 'paid', 'failed', 'refunded'])->default('pending');
     $table->timestamps();
 });
