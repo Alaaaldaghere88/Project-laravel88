@@ -23,4 +23,8 @@ return[
 'new_property' => 'New property created',
 'A new property has been created with ID: {id}' => 'A new property has been created with ID: {id}',
 'Active property changed successfully' => 'Active property changed successfully',
+'Accept appointment successfully' => 'Accept appointment successfully',
+'Reject appointment successfully' => 'Reject appointment successfully',
+'Accept appointment number' => 'Accept appointment number: {id} successfully',
+'Reject appointment number' => 'Reject appointment number: {id} due to incomplete payment.',
 ];

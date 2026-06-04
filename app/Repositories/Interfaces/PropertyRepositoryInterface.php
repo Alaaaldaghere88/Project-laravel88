@@ -10,4 +10,5 @@ interface PropertyRepositoryInterface{
     public function suggestion(int $id);
     public function changeStatus($id, $status);
     public function active($id,$flag);
+    public function getByOwnerId($ownerId);
 }

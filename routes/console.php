@@ -8,3 +8,4 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 Schedule::command('payments:check-status')->everyTenMinutes();
+Schedule::command('app:send-appointment-reminders')->dailyAt('00:00');

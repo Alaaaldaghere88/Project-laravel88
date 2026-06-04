@@ -7,6 +7,10 @@ use Illuminate\Console\Command;
 use App\Repositories\Interfaces\PaymentRepositoryInterface;
 use App\Repositories\Interfaces\AppointmentRepositoryInterface;
 use App\Models\Payment;
+use App\Models\Appointment;
+use App\Notifications\CustomNotification;
+use App\Services\FcmService;
+use Illuminate\Support\Facades\Notification;
 use Stripe\Stripe;
 use Stripe\Checkout\Session;
 
@@ -17,14 +21,17 @@ class CheckPendingPayments extends Command
 
     protected $paymentRepository;
     protected $appointmentRepository;
+    protected $fcmService;
 
     public function __construct(
         PaymentRepositoryInterface $paymentRepository,
-        AppointmentRepositoryInterface $appointmentRepository
+        AppointmentRepositoryInterface $appointmentRepository,
+        FcmService $fcmService
     ) {
         parent::__construct();
         $this->paymentRepository = $paymentRepository;
         $this->appointmentRepository = $appointmentRepository;
+        $this->fcmService = $fcmService;
     }
 
     public function handle()
@@ -50,17 +57,21 @@ class CheckPendingPayments extends Command
                         'status' => 'paid',
                         'stripe_payment_intent_id' => $session->payment_intent,
                     ]);
-
                     $this->appointmentRepository->update($payment->appointment_id, [
                         'status' => AppointmentStatus::Accepted->value,
                     ]);
-                    $this->info("تم تأكيد الحجز رقم: {$payment->appointment_id} بنجاح.");
+                    $this->fcmService->sendNotification(
+                        $payment->appointment->user->fcm_token,
+                        __('messages.Accept appointment successfully'),
+                        __("messages.Accept appointment number", ['id' => $payment->appointment_id])
+                    );
+                    Notification::send($payment->appointment->user, new CustomNotification(
+                        __('messages.Accept appointment successfully'),
+                        __("messages.Accept appointment number", ['id' => $payment->appointment_id])
+                    ));
                 }
                 else {
                     if ($session->status === 'open') {
-                        // if ($payment->created_at->diffInMinutes(now()) < 30) {
-                        //     continue;
-                        // }
                         $session->expire();
                     }
                     $this->paymentRepository->update($payment->id, [
@@ -69,16 +80,21 @@ class CheckPendingPayments extends Command
                     $this->appointmentRepository->update($payment->appointment_id, [
                         'status' => AppointmentStatus::Rejected->value
                     ]);
-
-                    $this->error("تم إلغاء الرابط المفتوح وتغيير حالة الحجز رقم: {$payment->appointment_id} إلى مرفوض لعدم الدفع.");
+                        $this->fcmService->sendNotification(
+                            $payment->appointment->user->fcm_token,
+                            __('messages.Reject appointment successfully'),
+                            __("messages.Reject appointment number", ['id' => $payment->appointment_id])
+                        );
+                    Notification::send($payment->appointment->user, new CustomNotification(
+                        __('messages.Reject appointment successfully'),
+                        __("messages.Reject appointment number", ['id' => $payment->appointment_id])
+                    ));
                 }
 
             } catch (\Exception $e) {
                 $this->error("خطأ أثناء فحص الدفعة رقم {$payment->id}: " . $e->getMessage());
             }
         }
-
-        $this->info('تم الانتهاء من فحص جميع المدفوعات.');
         return Command::SUCCESS;
     }
 }

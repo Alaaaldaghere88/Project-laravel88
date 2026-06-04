@@ -105,4 +105,8 @@ public function filter(array $filters)
         }
         return null;
     }
+    public function getByOwnerId($ownerId)
+    {
+        return $this->model->where('user_id', $ownerId)->get();
+    }
 }

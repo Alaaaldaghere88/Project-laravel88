@@ -45,7 +45,7 @@ class AppointmentRepository implements AppointmentRepositoryInterface
         ->get();
     }
    public function sameDay(array $data)
-{
+   {
     if (!isset($data['appointment_date'])) {
         return false;
     }
@@ -61,9 +61,9 @@ class AppointmentRepository implements AppointmentRepositoryInterface
             });
         })
         ->exists();
-}
+    }
     public function filter(array $filters)
-{
+    {
     $query = $this->model->query();
     $user=auth()->user();
     if(!$user->hasRole('admin'))
@@ -80,6 +80,12 @@ class AppointmentRepository implements AppointmentRepositoryInterface
         $query->where('status', $filters['status']);
     }
     return $query->get();
-}
+    }
+    public function getByOwnerId(int $ownerId)
+    {
+    return $this->model->whereHas('property', function ($query) use ($ownerId) {
+        $query->where('user_id', $ownerId);
+    })->get();
+    }
 
 }

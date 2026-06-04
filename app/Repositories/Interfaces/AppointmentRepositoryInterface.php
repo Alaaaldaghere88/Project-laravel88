@@ -10,5 +10,5 @@ interface AppointmentRepositoryInterface
     public function getAccessibleAppointments(int $userId);
     public function sameDay(array $data);
     public function filter(array $filters);
-
+    public function getByOwnerId(int $ownerId);
 }

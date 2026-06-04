@@ -10,6 +10,7 @@ use App\Http\Controllers\PropertyTypeController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ReviewReplayController;
+use App\Http\Controllers\StatisicsController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\VerifyEmail;
 use Illuminate\Http\Request;
@@ -104,6 +105,11 @@ Route::middleware(['auth:sanctum','active','role:admin|customer','lang'])->group
     $route->controller(ReportController::class)->prefix('report')->group(function($route){
         $route->get('/','index');
         $route->get('/{id}','show');
+    });
+});
+Route::middleware(['auth:sanctum','active','role:admin|owner','lang'])->group(function($route){
+    $route->controller(StatisicsController::class)->prefix('statistics')->group(function($route){
+        $route->get('/','index');
     });
 });
 //admin

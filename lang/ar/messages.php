@@ -23,4 +23,8 @@ return [
 'new_property' => 'تم إنشاء عقار جديد',
 'A new property has been created with ID: {id}' => 'تم إنشاء عقار جديد مع ID: {id}',
 'Active property changed successfully' => 'تم تغيير حالة العقار بنجاح',
+'Accept appointment successfully' => 'تم قبول الحجز بنجاح',
+'Reject appointment successfully' => 'تم رفض الحجز بنجاح',
+'Accept appointment number' => 'تم قبول الحجز رقم: {id} بنجاح',
+'Reject appointment number' => 'تم رفض الحجز رقم: {id} لعدم إتمام الدفع.',
 ];
